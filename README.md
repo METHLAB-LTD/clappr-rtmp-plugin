@@ -1,48 +1,66 @@
 clappr-rtmp-plugin
 ==================
 
-RTMP support for [Clappr player](http://github.com/globocom/clappr). Supports both RTMP direct and SMIL (dynamic streaming).
+RTMP support for [Clappr player](http://github.com/globocom/clappr). Supports both RTMP direct and SMIL (dynamic streaming). Updated to work more natually with npm environments like ReactJS.
 
 ## How to use
 
-Import rtmp.min.js
+Install dependencies
 
 ```javascript
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/video-dev/clappr-rtmp-plugin@latest/dist/rtmp.min.js">
-</script>
+yarn add clappr
+yarn add visorgg/clappr-rtmp-plugin
 ```
-and create Clappr Player adding the external plugin:
+
+Render like this:
 
 ```javascript
-var player = new Clappr.Player({
-    source: "rtmp://source_here",
-    parentId: "#player-wrapper",
-    plugins: {'playback': [RTMP]},
-    rtmpConfig: {
-        swfPath: 'dist/assets/RTMP.swf',
-        scaling:'stretch',
-        playbackType: 'live',
+// @flow
+"use strict";
+
+import React from "react";
+import Clappr from "clappr";
+import ClapprRtmp from "clappr-rtmp";
+
+export default class MyPlayer extends React.PureComponent {
+  player = null;
+  componentDidMount() {
+    this.player = new Clappr.Player({
+      source: "rtmp://<url>",
+      parentId: "#player",
+      plugins: {"playback": [ClapprRtmp]},
+      rtmpConfig: {
+        scaling:"stretch",
+        playbackType: "live",
         bufferTime: 1,
         startLevel: 0,
         switchRules: {
-            "SufficientBandwidthRule": {
-                "bandwidthSafetyMultiple": 1.15,
-                "minDroppedFps": 2
-            },
-            "InsufficientBufferRule": {
-                "minBufferLength": 2
-            },
-            "DroppedFramesRule": {
-                "downSwitchByOne": 10,
-                "downSwitchByTwo": 20,
-                "downSwitchToZero": 24
-            },
-            "InsufficientBandwidthRule": {
-                "bitrateMultiplier": 1.15
-            }
-        }
-    },
-});
+          "SufficientBandwidthRule": {
+            "bandwidthSafetyMultiple": 1.15,
+            "minDroppedFps": 2,
+          },
+          "InsufficientBufferRule": {
+            "minBufferLength": 2,
+          },
+          "DroppedFramesRule": {
+            "downSwitchByOne": 10,
+            "downSwitchByTwo": 20,
+            "downSwitchToZero": 24,
+          },
+          "InsufficientBandwidthRule": {
+            "bitrateMultiplier": 1.15,
+          },
+        },
+      },
+    });
+  }
+  render() {
+    return (
+      <div id="player"></div>
+    );
+  }
+}
+
 ```
 
 ## Configuration
